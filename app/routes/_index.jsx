@@ -25,8 +25,8 @@ export const Index = () => {
   useEffect(() => {
     if (packClient) {
       const query = `
-      query Page($handle: string!) {
-        siteSettings(handle: $handle) {
+      query pageByHandle($handle: String!) {
+        pageByHandle(handle: $handle) {
           id
           title
           description
