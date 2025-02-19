@@ -8,7 +8,9 @@ import {
   useRouteLoaderData,
   ScrollRestoration,
   isRouteErrorResponse,
+  useLoaderData
 } from '@remix-run/react';
+import {PreviewProvider} from '@pack/react';
 import favicon from '~/assets/favicon.svg';
 import resetStyles from '~/styles/reset.css?url';
 import appStyles from '~/styles/app.css?url';
@@ -69,11 +71,15 @@ export async function loader(args) {
   // Await the critical data required to render initial state of the page
   const criticalData = await loadCriticalData(args);
 
-  const {storefront, env} = args.context;
+  const {storefront, env, pack} = args.context;
+
+  const isPreviewModeEnabled = pack.isPreviewModeEnabled();
 
   return {
     ...deferredData,
     ...criticalData,
+    customizerMeta: pack.preview?.session.get('customizerMeta'),
+    isPreviewModeEnabled,
     publicStoreDomain: env.PUBLIC_STORE_DOMAIN,
     shop: getShopAnalytics({
       storefront,
@@ -179,7 +185,17 @@ export function Layout({children}) {
 }
 
 export default function App() {
-  return <Outlet />;
+
+  const {customizerMeta, isPreviewModeEnabled} = useLoaderData();
+  
+  return (
+    <PreviewProvider
+      customizerMeta={customizerMeta}
+      isPreviewModeEnabled={isPreviewModeEnabled}
+    >
+      <Outlet />
+    </PreviewProvider>
+  )
 }
 
 export function ErrorBoundary() {
