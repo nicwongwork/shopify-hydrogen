@@ -173,16 +173,9 @@ function loadDeferredData({context}) {
 export function Layout({children}) {
   const nonce = useNonce();
   /** @type {RootLoader} */
-  const {customizerMeta, isPreviewModeEnabled} = useLoaderData();
   const data = useRouteLoaderData('root');
 
-  console.log('customizerMeta', customizerMeta)
-
   return (
-    <PreviewProvider
-      customizerMeta={customizerMeta}
-      isPreviewModeEnabled={isPreviewModeEnabled}
-    >
     <html lang="en">
       <head>
         <meta charSet="utf-8" />
@@ -209,13 +202,21 @@ export function Layout({children}) {
         <Scripts nonce={nonce} />
       </body>
     </html>
-    </PreviewProvider>
   );
 }
 
 export default function App() {
+  const {customizerMeta, isPreviewModeEnabled, siteSettings} = useLoaderData();
   
-  return <Outlet />
+  return (
+    <PreviewProvider
+      customizerMeta={customizerMeta}
+      isPreviewModeEnabled={isPreviewModeEnabled}
+      siteSettings={siteSettings}
+    >
+      <Outlet />
+    </PreviewProvider>
+  );
 }
 
 export function ErrorBoundary() {
