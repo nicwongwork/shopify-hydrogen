@@ -25,7 +25,8 @@ export default async function handleRequest(
       'https://nic-wong-1d3f4eca2b6fed0cf749.o2.myshopify.dev'
     ],
     frameAncestors: [
-      'https://app.packdigital.com'
+      "'self'",
+      '/'
     ],
     shop: {
       checkoutDomain: context.env.PUBLIC_CHECKOUT_DOMAIN,
