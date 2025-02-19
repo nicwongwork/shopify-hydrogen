@@ -173,7 +173,7 @@ function loadDeferredData({context}) {
 export function Layout({children}) {
   const nonce = useNonce();
   /** @type {RootLoader} */
-  const {customizerMeta, isPreviewModeEnabled, siteSettings} = useLoaderData();
+  const {customizerMeta, isPreviewModeEnabled} = useLoaderData();
   const data = useRouteLoaderData('root');
 
   console.log('customizerMeta', customizerMeta)
@@ -182,7 +182,6 @@ export function Layout({children}) {
     <PreviewProvider
       customizerMeta={customizerMeta}
       isPreviewModeEnabled={isPreviewModeEnabled}
-      siteSettings={siteSettings}
     >
     <html lang="en">
       <head>
