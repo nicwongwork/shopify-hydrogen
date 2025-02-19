@@ -93,14 +93,12 @@ export async function loader(args) {
   const {storefront, env, pack} = args.context;
 
   const isPreviewModeEnabled = pack.isPreviewModeEnabled();
-  const siteSettings = await pack.query(SITE_SETTINGS_QUERY);
 
   return {
     ...deferredData,
     ...criticalData,
     customizerMeta: pack.preview?.session.get('customizerMeta'),
     isPreviewModeEnabled,
-    siteSettings,
     publicStoreDomain: env.PUBLIC_STORE_DOMAIN,
     shop: getShopAnalytics({
       storefront,
@@ -206,13 +204,12 @@ export function Layout({children}) {
 }
 
 export default function App() {
-  const {customizerMeta, isPreviewModeEnabled, siteSettings} = useLoaderData();
+  const {customizerMeta, isPreviewModeEnabled} = useLoaderData();
   
   return (
     <PreviewProvider
       customizerMeta={customizerMeta}
       isPreviewModeEnabled={isPreviewModeEnabled}
-      siteSettings={siteSettings}
     >
       <Outlet />
     </PreviewProvider>
