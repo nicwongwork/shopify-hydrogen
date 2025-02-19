@@ -10,6 +10,7 @@ import type {
   HydrogenSessionData,
   HydrogenEnv,
 } from '@shopify/hydrogen';
+import type { Pack } from '@pack/hydrogen'
 import type {createAppLoadContext} from '~/lib/context';
 
 declare global {

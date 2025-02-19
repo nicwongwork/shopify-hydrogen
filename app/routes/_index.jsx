@@ -1,51 +1,40 @@
 import { useEffect } from 'react';
-import {json} from '@shopify/remix-oxygen';
+import { json } from '@shopify/remix-oxygen';
+import { useLoaderData } from '@remix-run/react';
 import { PackClient } from '@pack/client'
 
+const HOME_GENERAL_QUERY = `
+    query pageByHandle($handle: String!) {
+        pageByHandle(handle: $handle) {
+        id
+        title
+        description
+        }
+    }
+`;
 
 export async function loader({ context, params }) {
-  return json({
-    token: context.env.PACK_SECRET_TOKEN,
-  });
+
+    const { pack } = context;
+    const homeGeneral = await pack.query(HOME_GENERAL_QUERY, { variables: { handle: '/' } });
+
+    return json({
+        token: context.env.PACK_SECRET_TOKEN,
+        homeGeneral
+    });
 }
 
-import { useLoaderData } from '@remix-run/react';
-
 export const Index = () => {
-  const { token } = useLoaderData();
+    const { token, homeGeneral } = useLoaderData();
+    const { data: { pageByHandle } } = homeGeneral;
 
-  // Initialize the client with the fetched token
-  const packClient = new PackClient({
-    apiUrl: 'https://app.packdigital.com/graphql', // defaults to our CDN API https://apicdn.packdigital.com/graphql
-    token: token,
-    contentEnvironment: 'content_environment_handle', // defaults to the primary content environment
-  });
+    console.log('pageByHandle', pageByHandle)
 
-  // Make a query to fetch the site settings
-  useEffect(() => {
-    if (packClient) {
-      const query = `
-      query pageByHandle($handle: String!) {
-        pageByHandle(handle: $handle) {
-          id
-          title
-          description
-        }
-      }
-    `;
-      const fetchData = async () => {
-        const response = await packClient.fetch(query, {variables: { handle: '/' }});
-        console.log('123231', response.data);
-      };
-      fetchData();
-    }
-  }, []);
-
-   return (
-    <div>
-      <h1>Home</h1>
-    </div>
-  );
+    return (
+        <div>
+            <h1>{pageByHandle ? pageByHandle.title : null}</h1>
+        </div>
+    );
 };
 
 export default Index

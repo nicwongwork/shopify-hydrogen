@@ -3,9 +3,11 @@
 // @ts-ignore
 // eslint-disable-next-line import/no-unresolved
 import * as remixBuild from 'virtual:remix/server-build';
-import {storefrontRedirect} from '@shopify/hydrogen';
-import {createRequestHandler} from '@shopify/remix-oxygen';
-import {createAppLoadContext} from '~/lib/context';
+import { storefrontRedirect } from '@shopify/hydrogen';
+import { handleRequest } from '@pack/hydrogen'
+import { createRequestHandler } from '@shopify/remix-oxygen';
+import { createAppLoadContext } from '~/lib/context';
+
 
 /**
  * Export a fetch handler in module format.
@@ -19,23 +21,28 @@ export default {
    */
   async fetch(request, env, executionContext) {
     try {
+
+      /**
+       * Create a Remix request handler and pass
+       * Hydrogen's Storefront client to the loader context.
+       */
+      // const handleRequest = createRequestHandler({
+      //   build: remixBuild,
+      //   mode: process.env.NODE_ENV,
+      //   getLoadContext: () => appLoadContext,
+      // });
       const appLoadContext = await createAppLoadContext(
         request,
         env,
         executionContext,
       );
 
-      /**
-       * Create a Remix request handler and pass
-       * Hydrogen's Storefront client to the loader context.
-       */
-      const handleRequest = createRequestHandler({
-        build: remixBuild,
-        mode: process.env.NODE_ENV,
-        getLoadContext: () => appLoadContext,
-      });
-
-      const response = await handleRequest(request);
+      const response = await handleRequest(appLoadContext.pack, request,
+        createRequestHandler({
+          build: remixBuild,
+          mode: process.env.NODE_ENV,
+          getLoadContext: () => appLoadContext,
+        }),);
 
       if (appLoadContext.session.isPending) {
         response.headers.set(
@@ -60,7 +67,7 @@ export default {
       return response;
     } catch (error) {
       console.error(error);
-      return new Response('An unexpected error occurred', {status: 500});
+      return new Response('An unexpected error occurred', { status: 500 });
     }
   },
 };

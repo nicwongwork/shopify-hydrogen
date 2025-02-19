@@ -50,7 +50,6 @@ export function Aside({children, heading, type}) {
             &times;
           </button>
         </header>
-        <main>{children}</main>
       </aside>
     </div>
   );

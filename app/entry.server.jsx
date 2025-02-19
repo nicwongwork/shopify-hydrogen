@@ -20,7 +20,9 @@ export default async function handleRequest(
   const {nonce, header, NonceProvider} = createContentSecurityPolicy({
     connectSrc: [
       'self',
-      'https://app.packdigital.com/graphql'
+      'https://app.packdigital.com/graphql',
+      'https://apicdn.packdigital.com/graphql',
+      'https://nic-wong-1d3f4eca2b6fed0cf749.o2.myshopify.dev'
     ],
     shop: {
       checkoutDomain: context.env.PUBLIC_CHECKOUT_DOMAIN,
