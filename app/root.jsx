@@ -61,6 +61,25 @@ export function links() {
   ];
 }
 
+const SITE_SETTINGS_QUERY = `#graphql
+  query SiteSettings($version: Version) {
+    siteSettings(version: $version) {
+      id
+      status
+      settings
+      publishedAt
+      createdAt
+      updatedAt
+      favicon
+      seo {
+        title
+        description
+        keywords
+      }
+    }
+  }
+`
+
 /**
  * @param {LoaderFunctionArgs} args
  */
@@ -74,12 +93,14 @@ export async function loader(args) {
   const {storefront, env, pack} = args.context;
 
   const isPreviewModeEnabled = pack.isPreviewModeEnabled();
+  const siteSettings = await pack.query(SITE_SETTINGS_QUERY);
 
   return {
     ...deferredData,
     ...criticalData,
     customizerMeta: pack.preview?.session.get('customizerMeta'),
     isPreviewModeEnabled,
+    siteSettings,
     publicStoreDomain: env.PUBLIC_STORE_DOMAIN,
     shop: getShopAnalytics({
       storefront,
@@ -152,9 +173,17 @@ function loadDeferredData({context}) {
 export function Layout({children}) {
   const nonce = useNonce();
   /** @type {RootLoader} */
+  const {customizerMeta, isPreviewModeEnabled, siteSettings} = useLoaderData();
   const data = useRouteLoaderData('root');
 
+  console.log('customizerMeta', customizerMeta)
+
   return (
+    <PreviewProvider
+      customizerMeta={customizerMeta}
+      isPreviewModeEnabled={isPreviewModeEnabled}
+      siteSettings={siteSettings}
+    >
     <html lang="en">
       <head>
         <meta charSet="utf-8" />
@@ -181,21 +210,13 @@ export function Layout({children}) {
         <Scripts nonce={nonce} />
       </body>
     </html>
+    </PreviewProvider>
   );
 }
 
 export default function App() {
-
-  const {customizerMeta, isPreviewModeEnabled} = useLoaderData();
   
-  return (
-    <PreviewProvider
-      customizerMeta={customizerMeta}
-      isPreviewModeEnabled={isPreviewModeEnabled}
-    >
-      <Outlet />
-    </PreviewProvider>
-  )
+  return <Outlet />
 }
 
 export function ErrorBoundary() {

@@ -26,7 +26,7 @@ export default async function handleRequest(
     ],
     frameAncestors: [
       "'self'",
-      '/'
+      "app.packdigital.com/"
     ],
     shop: {
       checkoutDomain: context.env.PUBLIC_CHECKOUT_DOMAIN,
